@@ -356,6 +356,30 @@ After implementation, verify with these tests:
 
 ## 11. Future Enhancements (Not in MVP)
 
+### PDF Support (High Priority)
+**Why deferred:** Adds complexity, but will be needed since receipts are often scanned as PDFs.
+
+**Implementation approach when ready:**
+```bash
+npm install pdfjs-dist
+```
+- Use `pdfjs-dist` (Mozilla's PDF.js) to render PDF pages to canvas
+- Convert each page to an image, then run Tesseract OCR
+- Concatenate text from all pages before sending to OpenAI
+- Multi-page PDFs handled automatically
+
+**Code location:** Add to `lib/ocr.ts` with a `extractTextFromPDF()` function
+
+### Multi-Image Support
+**Why deferred:** Adds UI complexity (reordering, previewing multiple images).
+
+**Implementation approach when ready:**
+- Allow drag-and-drop of multiple images
+- Show thumbnail strip with drag-to-reorder
+- Process images in order, concatenate OCR text
+- Consider max limit (e.g., 5 images per receipt)
+
+### Other Future Enhancements
 - User accounts & receipt history
 - Multiple receipt batch processing
 - Categories for items (groceries, household, etc.)
