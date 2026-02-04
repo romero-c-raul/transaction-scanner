@@ -5,6 +5,74 @@ A web application that allows users to scan receipts, verify/correct the extract
 
 ---
 
+## Implementation Tasks (Hybrid Approach)
+
+Tasks are organized as: Foundation first, then vertical feature slices (each testable), then polish.
+
+### Foundation
+
+**Task #4: Initialize Next.js 14 + TypeScript + Tailwind + shadcn/ui**
+- Initialize Next.js 14 project with TypeScript and Tailwind CSS
+- Install dependencies: tesseract.js, openai, xlsx, browser-image-compression
+- Set up shadcn/ui with components: button, input, card, table
+- Create .env.local template for OPENAI_API_KEY
+- **Test:** Project runs with `npm run dev`
+
+**Task #5: Create TypeScript types** [blocked by #4]
+- Create `types/receipt.ts` with interfaces for Receipt, ReceiptItem
+- **Test:** Types compile without errors
+
+### Feature Slices
+
+**Task #6: Upload image and preview** [blocked by #5]
+- Build `app/page.tsx` (upload screen)
+- Build `components/receipt-uploader.tsx` (drag & drop, file picker, camera capture)
+- Build `components/receipt-preview.tsx` (display uploaded image)
+- **Test:** Upload/capture image, see preview displayed
+
+**Task #7: OCR text extraction** [blocked by #6]
+- Create `lib/ocr.ts` with Tesseract.js wrapper
+- Integrate OCR into upload flow
+- Add progress indicator during OCR
+- **Test:** Upload receipt image, see extracted text in console/UI
+
+**Task #8: AI parsing with OpenAI** [blocked by #7]
+- Create `app/api/parse-receipt/route.ts` endpoint
+- Receive OCR text, call OpenAI GPT-4o-mini, return structured JSON
+- Wire up frontend to call API after OCR completes
+- **Test:** Upload receipt, see parsed JSON with store, date, items, prices
+
+**Task #9: Verification and editing UI** [blocked by #8]
+- Build `app/verify/page.tsx` with receipt image + editable fields
+- Build `components/item-list.tsx` (editable items, add/remove)
+- Auto-calculate total from items + tax
+- Wire up state management from upload page
+- **Test:** Edit item name/price, see total update correctly
+
+**Task #10: Excel export** [blocked by #9]
+- Create `lib/excel.ts` with SheetJS export function
+- Build `components/export-button.tsx`
+- Generate .xlsx file and trigger browser download
+- **Test:** Click export, file opens in Excel/Google Sheets with correct data
+
+### Polish & Deploy
+
+**Task #11: Loading states, error handling, mobile testing** [blocked by #10]
+- Add loading states during OCR and AI parsing
+- Add error handling with user-friendly messages
+- Test full flow on mobile browser (iOS Safari/Chrome)
+- Fix responsive UI issues
+- **Test:** Full flow works smoothly on phone
+
+**Task #12: Deploy to Vercel** [blocked by #11]
+- Push to GitHub
+- Connect to Vercel
+- Add OPENAI_API_KEY environment variable
+- Deploy and verify live URL
+- **Test:** App accessible and working via Vercel URL
+
+---
+
 ## 1. User Flow (Detailed)
 
 ### Screen 1: Upload Receipt
@@ -356,19 +424,32 @@ After implementation, verify with these tests:
 
 ## 11. Future Enhancements (Not in MVP)
 
-### PDF Support (High Priority)
+### PDF Support + Server-Side OCR Upgrade (High Priority)
 **Why deferred:** Adds complexity, but will be needed since receipts are often scanned as PDFs.
 
-**Implementation approach when ready:**
+**Two options when implementing PDF support:**
+
+**Option A: Keep Browser OCR (Simpler)**
 ```bash
 npm install pdfjs-dist
 ```
 - Use `pdfjs-dist` (Mozilla's PDF.js) to render PDF pages to canvas
 - Convert each page to an image, then run Tesseract OCR
 - Concatenate text from all pages before sending to OpenAI
-- Multi-page PDFs handled automatically
+- Code location: Add to `lib/ocr.ts` with a `extractTextFromPDF()` function
 
-**Code location:** Add to `lib/ocr.ts` with a `extractTextFromPDF()` function
+**Option B: Move to Server-Side OCR (More Accurate)**
+- Move OCR from browser to Next.js API route
+- Use Google Cloud Vision or AWS Textract (handles both images and PDFs)
+- Benefits: Better accuracy, consistent performance, cleaner PDF handling
+- Trade-off: Small cost (~$1.50/1000 images), images uploaded to server
+- Code location: New API route `/api/ocr` that returns extracted text
+
+**When to choose Option B:**
+- If Tesseract accuracy is insufficient for your receipts
+- If browser OCR is too slow
+- If you want batch processing capabilities
+- Natural time to evaluate: when adding PDF support
 
 ### Multi-Image Support
 **Why deferred:** Adds UI complexity (reordering, previewing multiple images).
