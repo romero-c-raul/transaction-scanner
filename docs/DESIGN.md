@@ -74,6 +74,22 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 - Deploy and verify live URL
 - **Test:** App accessible and working via Vercel URL
 
+### Test-Driven Development (TDD) Guidance
+
+Write tests **before** implementation for tasks with testable logic. Skip TDD for setup, UI-only, and deployment tasks where manual verification is more practical. The table below is a starting point — revisit what to test when exploring each task, as the right test cases will become clearer during implementation.
+
+| Task | TDD? | What to test |
+|------|------|-------------|
+| #1 Project setup | No | Nothing beyond "it runs" |
+| #2 TypeScript types | No | Compiler is the test |
+| #3 Upload & preview | No | UI interaction — manual testing more practical |
+| #4 OCR (`lib/ocr.ts`) | **Yes** | Wrapper interface (image in → text out), error handling for invalid images |
+| #5 AI parsing (`app/api/parse-receipt/route.ts`) | **Yes** | Response shape validation, error responses, rate limiting logic. Mock OpenAI calls. |
+| #6 Verification UI (total calc) | **Yes** | Pure function: items + tax = total — ideal for TDD |
+| #7 Excel export (`lib/excel.ts`) | **Yes** | Structured receipt data → valid spreadsheet with correct columns/rows |
+| #8 Polish | No | Loading states, responsive fixes — visual/manual testing |
+| #9 Deploy | No | Deployment verification |
+
 ---
 
 ## 1. User Flow (Detailed)
