@@ -25,11 +25,11 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 ### Feature Slices
 
 **Task #3: Upload image and preview** [blocked by #2]
-- Build `app/page.tsx` (upload screen)
-- Build `components/receipt-uploader.tsx` (drag & drop, file picker, camera capture)
-- Build `components/receipt-preview.tsx` (display uploaded image)
-- Decide state management approach for passing receipt data to verify page (React Context or Zustand)
-- **Test:** Upload/capture image, see preview displayed
+- Build `app/page.tsx` (upload screen with `"use client"`, `useState` for selected file)
+- Build `components/receipt-uploader.tsx` (file picker with JPG/PNG validation)
+- Build `components/receipt-preview.tsx` (display uploaded image using `URL.createObjectURL`)
+- Note: drag & drop and camera capture deferred to Task #8 (polish). Image compression and "Process Receipt" button deferred to Task #4 (OCR). State management decision deferred to Task #5/6 (not needed until cross-page data flow).
+- **Test:** Pick image via file picker, see preview displayed
 
 **Task #4: OCR text extraction** [blocked by #3]
 - Create `lib/ocr.ts` with Tesseract.js wrapper
@@ -101,17 +101,17 @@ Write tests **before** implementation for tasks with testable logic. Skip TDD fo
 │                                     │
 │  ┌─────────────────────────────┐   │
 │  │                             │   │
-│  │   Drop image here or        │   │
-│  │   [Take Photo] [Upload]     │   │
+│  │      [Upload Image]         │   │
 │  │                             │   │
 │  └─────────────────────────────┘   │
 │                                     │
 │  Supported: JPG, PNG                 │
 └─────────────────────────────────────┘
 ```
-- User takes photo with phone camera OR uploads existing image
+- User selects image via file picker (on mobile, this natively offers camera and gallery access)
 - Image preview shown after selection
-- "Process Receipt" button to continue
+- "Process Receipt" button added in Task #4 (triggers OCR)
+- Note: drag & drop and dedicated camera capture button may be added in Task #8 (polish)
 
 ### Screen 2: Processing (Loading State)
 ```
@@ -174,7 +174,7 @@ Write tests **before** implementation for tasks with testable logic. Skip TDD fo
 ## 2. Requirements
 
 ### Functional Requirements
-- [ ] Upload images via file picker or camera capture
+- [ ] Upload images via file picker (covers camera access on mobile)
 - [ ] Support common image formats (JPG, PNG)
 - [ ] Extract text from receipt images using OCR
 - [ ] Parse extracted text into structured data (store, date, items, prices, tax, total)
@@ -195,7 +195,7 @@ Write tests **before** implementation for tasks with testable logic. Skip TDD fo
 
 ## 3. Tech Stack
 
-### Frontend + Backend: Next.js 14 (App Router)
+### Frontend + Backend: Next.js 15 (App Router)
 **Why:**
 - Full-stack React framework - one codebase for frontend + API
 - Built by Vercel, deploys to Vercel with zero config
@@ -346,6 +346,12 @@ transaction-scanner/
 │   ├── receipt-preview.tsx
 │   ├── item-list.tsx
 │   └── export-button.tsx
+├── docs/
+│   ├── DESIGN.md           # This file — design & exploration plan
+│   └── tasks/
+│       ├── TASK-1.md        # Project setup breakdown
+│       ├── TASK-2.md        # TypeScript types breakdown
+│       └── ...              # One file per task
 ├── lib/
 │   ├── ocr.ts              # Tesseract.js wrapper
 │   ├── openai.ts           # OpenAI client setup
