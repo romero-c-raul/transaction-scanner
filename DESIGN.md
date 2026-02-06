@@ -42,6 +42,7 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 - Receive OCR text, call OpenAI GPT-4o-mini, return structured JSON
 - Wire up frontend to call API after OCR completes
 - Add basic rate limiting to the API route to prevent abuse
+- Review basic security principles for these kinds of apps
 - **Test:** Upload receipt, see parsed JSON with store, date, items, prices
 
 **Task #6: Verification and editing UI** [blocked by #5]
