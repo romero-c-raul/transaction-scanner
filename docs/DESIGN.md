@@ -13,8 +13,8 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 
 **Task #1: Initialize Next.js 15 + TypeScript + Tailwind + shadcn/ui**
 - Initialize Next.js 15 project with TypeScript and Tailwind CSS
-- Install dependencies: tesseract.js, openai, xlsx, browser-image-compression
 - Set up shadcn/ui with components: button, input, card, table
+- Note: other dependencies (tesseract.js, openai, xlsx, browser-image-compression) are installed in their respective tasks (#3–#7), not here
 - Create .env.local template for OPENAI_API_KEY
 - **Test:** Project runs with `npm run dev`
 
