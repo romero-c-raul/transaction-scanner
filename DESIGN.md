@@ -11,8 +11,8 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 
 ### Foundation
 
-**Task #1: Initialize Next.js 14 + TypeScript + Tailwind + shadcn/ui**
-- Initialize Next.js 14 project with TypeScript and Tailwind CSS
+**Task #1: Initialize Next.js 15 + TypeScript + Tailwind + shadcn/ui**
+- Initialize Next.js 15 project with TypeScript and Tailwind CSS
 - Install dependencies: tesseract.js, openai, xlsx, browser-image-compression
 - Set up shadcn/ui with components: button, input, card, table
 - Create .env.local template for OPENAI_API_KEY
@@ -28,6 +28,7 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 - Build `app/page.tsx` (upload screen)
 - Build `components/receipt-uploader.tsx` (drag & drop, file picker, camera capture)
 - Build `components/receipt-preview.tsx` (display uploaded image)
+- Decide state management approach for passing receipt data to verify page (React Context or Zustand)
 - **Test:** Upload/capture image, see preview displayed
 
 **Task #4: OCR text extraction** [blocked by #3]
@@ -40,6 +41,7 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 - Create `app/api/parse-receipt/route.ts` endpoint
 - Receive OCR text, call OpenAI GPT-4o-mini, return structured JSON
 - Wire up frontend to call API after OCR completes
+- Add basic rate limiting to the API route to prevent abuse
 - **Test:** Upload receipt, see parsed JSON with store, date, items, prices
 
 **Task #6: Verification and editing UI** [blocked by #5]
@@ -87,7 +89,7 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 │  │                             │   │
 │  └─────────────────────────────┘   │
 │                                     │
-│  Supported: JPG, PNG, HEIC          │
+│  Supported: JPG, PNG                 │
 └─────────────────────────────────────┘
 ```
 - User takes photo with phone camera OR uploads existing image
@@ -156,7 +158,7 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 
 ### Functional Requirements
 - [ ] Upload images via file picker or camera capture
-- [ ] Support common image formats (JPG, PNG, HEIC)
+- [ ] Support common image formats (JPG, PNG)
 - [ ] Extract text from receipt images using OCR
 - [ ] Parse extracted text into structured data (store, date, items, prices, tax, total)
 - [ ] Display verification screen with original image alongside extracted data
