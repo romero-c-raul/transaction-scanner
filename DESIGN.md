@@ -11,45 +11,45 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 
 ### Foundation
 
-**Task #4: Initialize Next.js 14 + TypeScript + Tailwind + shadcn/ui**
+**Task #1: Initialize Next.js 14 + TypeScript + Tailwind + shadcn/ui**
 - Initialize Next.js 14 project with TypeScript and Tailwind CSS
 - Install dependencies: tesseract.js, openai, xlsx, browser-image-compression
 - Set up shadcn/ui with components: button, input, card, table
 - Create .env.local template for OPENAI_API_KEY
 - **Test:** Project runs with `npm run dev`
 
-**Task #5: Create TypeScript types** [blocked by #4]
+**Task #2: Create TypeScript types** [blocked by #1]
 - Create `types/receipt.ts` with interfaces for Receipt, ReceiptItem
 - **Test:** Types compile without errors
 
 ### Feature Slices
 
-**Task #6: Upload image and preview** [blocked by #5]
+**Task #3: Upload image and preview** [blocked by #2]
 - Build `app/page.tsx` (upload screen)
 - Build `components/receipt-uploader.tsx` (drag & drop, file picker, camera capture)
 - Build `components/receipt-preview.tsx` (display uploaded image)
 - **Test:** Upload/capture image, see preview displayed
 
-**Task #7: OCR text extraction** [blocked by #6]
+**Task #4: OCR text extraction** [blocked by #3]
 - Create `lib/ocr.ts` with Tesseract.js wrapper
 - Integrate OCR into upload flow
 - Add progress indicator during OCR
 - **Test:** Upload receipt image, see extracted text in console/UI
 
-**Task #8: AI parsing with OpenAI** [blocked by #7]
+**Task #5: AI parsing with OpenAI** [blocked by #4]
 - Create `app/api/parse-receipt/route.ts` endpoint
 - Receive OCR text, call OpenAI GPT-4o-mini, return structured JSON
 - Wire up frontend to call API after OCR completes
 - **Test:** Upload receipt, see parsed JSON with store, date, items, prices
 
-**Task #9: Verification and editing UI** [blocked by #8]
+**Task #6: Verification and editing UI** [blocked by #5]
 - Build `app/verify/page.tsx` with receipt image + editable fields
 - Build `components/item-list.tsx` (editable items, add/remove)
 - Auto-calculate total from items + tax
 - Wire up state management from upload page
 - **Test:** Edit item name/price, see total update correctly
 
-**Task #10: Excel export** [blocked by #9]
+**Task #7: Excel export** [blocked by #6]
 - Create `lib/excel.ts` with SheetJS export function
 - Build `components/export-button.tsx`
 - Generate .xlsx file and trigger browser download
@@ -57,14 +57,14 @@ Tasks are organized as: Foundation first, then vertical feature slices (each tes
 
 ### Polish & Deploy
 
-**Task #11: Loading states, error handling, mobile testing** [blocked by #10]
+**Task #8: Loading states, error handling, mobile testing** [blocked by #7]
 - Add loading states during OCR and AI parsing
 - Add error handling with user-friendly messages
 - Test full flow on mobile browser (iOS Safari/Chrome)
 - Fix responsive UI issues
 - **Test:** Full flow works smoothly on phone
 
-**Task #12: Deploy to Vercel** [blocked by #11]
+**Task #9: Deploy to Vercel** [blocked by #8]
 - Push to GitHub
 - Connect to Vercel
 - Add OPENAI_API_KEY environment variable
