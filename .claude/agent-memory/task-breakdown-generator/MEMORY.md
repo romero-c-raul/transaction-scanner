@@ -27,11 +27,22 @@
 - TASK-1: Project setup (Next.js 15, TS, Tailwind, shadcn/ui)
 - TASK-2: TypeScript types (Receipt, ReceiptItem interfaces)
 - TASK-3: Upload image and preview (receipt-uploader, receipt-preview, page.tsx composition)
+- TASK-4: OCR text extraction (Tesseract.js, Jest setup, progress bar, raw text display)
 
 ## Key Decisions Made in Prior Tasks
 - Dependencies installed per-task, not all upfront (deviated from DESIGN.md)
-- Image compression deferred from Task #3 to Task #4
-- "Process Receipt" button deferred from Task #3 to Task #4
+- Image compression deferred from Task #3 -> Task #4 -> now deferred further (Task #8 polish)
+- "Process Receipt" button deferred from Task #3, now included in Task #4
 - State management decision deferred to Task #5/6
 - Drag & drop / camera capture deferred to Task #8
 - `useState` used for local state; no cross-page state yet
+- Jest (not Vitest) chosen for testing with `@next/jest`
+- OCR returns `{ text: string; confidence: number }` via OcrResult type in `lib/ocr.ts`
+- Tesseract worker created fresh per call (no reuse for MVP)
+- shadcn Progress component added for OCR progress bar
+
+## Test Infrastructure (from Task #4)
+- Jest + @next/jest + @types/jest + ts-node
+- jest.config.ts at project root
+- Test files in `__tests__/` dirs next to source (e.g., `lib/__tests__/ocr.test.ts`)
+- testEnvironment: "jsdom", moduleNameMapper for `@/` alias
