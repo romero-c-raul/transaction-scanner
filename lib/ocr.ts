@@ -11,13 +11,13 @@ export async function extractText(
   file: File,
   onProgress?: OcrProgressCallback
 ): Promise<OcrResult> {
-  const worker = await createWorker("eng", 1, {
-    logger: (info: { status: string; progress: number }) => {
-      if (info.status === "recognizing text" && onProgress) {
-        onProgress(info.progress);
-      }
-    },
-  });
+  const logger = (info: { status: string; progress: number }) => {
+    if (info.status === "recognizing text" && onProgress) {
+      onProgress(info.progress);
+    }
+  };
+
+  const worker = await createWorker("eng", 1, { logger });
 
   try {
     const { data } = await worker.recognize(file);
