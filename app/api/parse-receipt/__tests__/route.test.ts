@@ -134,4 +134,44 @@ describe("POST /api/parse-receipt", () => {
     expect(response.status).toBe(400);
     expect(data.error).toMatch(/length/i);
   });
+
+  // --- Sub-step 4c: Error handling tests ---
+  // These test that the route handles server-side failures gracefully
+  // and never leaks internal details (like API keys or stack traces)
+  // to the client.
+
+  it("returns 500 when OPENAI_API_KEY is not configured", async () => {
+    // Arrange: remove the API key that beforeEach sets.
+    // This simulates a deployment where someone forgot to configure it.
+    delete process.env.OPENAI_API_KEY;
+
+    // Act
+    const request = createRequest({ text: "some receipt text" });
+    const response = await POST(request);
+    const data = await response.json();
+
+    // Assert: 500 with a generic message (no key details leaked)
+    expect(response.status).toBe(500);
+    expect(data.error).toBeDefined();
+    expect(data.error).not.toMatch(/sk-/); // must not leak the key format
+  });
+
+  it("returns 500 with sanitized message when OpenAI call fails", async () => {
+    // Arrange: mock throws an error that contains sensitive info.
+    // In production, OpenAI errors might include your API key or
+    // internal details — the route must strip all of that out.
+    mockParse.mockRejectedValue(
+      new Error("Request failed: invalid API key sk-abc123")
+    );
+
+    // Act
+    const request = createRequest({ text: "some receipt text" });
+    const response = await POST(request);
+    const data = await response.json();
+
+    // Assert: 500 with a generic message, not the raw error
+    expect(response.status).toBe(500);
+    expect(data.error).not.toMatch(/sk-/);
+    expect(data.error).not.toMatch(/invalid API key/);
+  });
 });
