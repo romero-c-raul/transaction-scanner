@@ -1,3 +1,10 @@
+/**
+ * @jest-environment node
+ *
+ * API route tests need the Node.js environment (not jsdom) because
+ * NextRequest depends on the Web Request API, which is available in
+ * Node.js 18+ but not in jsdom.
+ */
 import { POST } from "@/app/api/parse-receipt/route";
 import { resetRateLimiter } from "@/lib/rate-limit";
 import { NextRequest } from "next/server";
