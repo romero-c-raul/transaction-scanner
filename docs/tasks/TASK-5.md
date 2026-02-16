@@ -172,6 +172,16 @@ Build should pass. The schema file is pure TypeScript with a `zod` import -- no 
 
 ## Step 5.4: Write Tests for the API Route (TDD -- Tests First)
 
+> **Implementation note:** We broke this step into 4 sub-steps to make it
+> easier to learn one concept at a time:
+> - **4a:** Mock setup + helper function + happy path test (learn mocking)
+> - **4b:** Input validation tests — 400s (learn error response testing)
+> - **4c:** Error handling tests — 500s (learn error sanitization)
+> - **4d:** Rate limiting test — 429 (learn loop-based testing)
+>
+> This worked well for absorbing new patterns. Consider the same approach
+> for future steps that introduce many concepts at once.
+
 ### What to do
 
 Create the test file at `app/api/parse-receipt/__tests__/route.test.ts` **before** writing the implementation. DESIGN.md marks Task #5 for TDD with these test areas: response shape validation, error responses, and rate limiting logic.
