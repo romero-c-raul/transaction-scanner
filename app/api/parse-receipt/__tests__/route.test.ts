@@ -103,4 +103,35 @@ describe("POST /api/parse-receipt", () => {
     expect(data.items[0].name).toBe("Milk 2%");
     expect(data.items[0].price).toBe(3.99);
   });
+
+  // --- Sub-step 4b: Input validation tests ---
+  // These test that the route rejects bad input BEFORE calling OpenAI.
+  // No mock configuration needed — the route should return 400
+  // without ever reaching the OpenAI call.
+
+  it("returns 400 when text is missing", async () => {
+    // Act: send a request with no text field
+    const request = createRequest({});
+    const response = await POST(request);
+    const data = await response.json();
+
+    // Assert: 400 with an error message
+    expect(response.status).toBe(400);
+    expect(data.error).toBeDefined();
+  });
+
+  it("returns 400 when text exceeds maximum length", async () => {
+    // Arrange: create a string longer than the 10,000 character limit.
+    // The route should reject this to prevent expensive OpenAI calls.
+    const longText = "a".repeat(10_001);
+
+    // Act
+    const request = createRequest({ text: longText });
+    const response = await POST(request);
+    const data = await response.json();
+
+    // Assert: 400 with an error mentioning "length"
+    expect(response.status).toBe(400);
+    expect(data.error).toMatch(/length/i);
+  });
 });
