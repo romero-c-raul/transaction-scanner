@@ -64,7 +64,8 @@
 - Task #6 verify page reads from this context
 
 ## Task Breakdown Patterns Learned
-- TDD tasks: test step comes before implementation steps, tests should fail initially
-- Mocking pattern for OpenAI: mock `openai` module, return controlled responses from `beta.chat.completions.parse`
+- TDD tasks: test step comes before implementation steps, tests should fail on assertions (not on missing imports)
+- TDD with multiple dependencies: when tests import from multiple modules that don't exist yet, include a step to create minimal implementations of those modules BEFORE the test-writing step. Tests that fail at the import level give no feedback — that's not effective TDD.
+- Mocking pattern for OpenAI: mock `openai` module, return controlled responses from `chat.completions.parse` (SDK v6+, not `beta.chat.completions.parse`)
 - Security step: no-code review checkpoint with verification table
 - Large tasks (11 steps): install -> config -> schema -> tests -> implementation modules -> orchestration route -> security review -> state management -> frontend wiring -> final verification
