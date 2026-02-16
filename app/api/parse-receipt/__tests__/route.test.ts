@@ -13,14 +13,13 @@ jest.mock("openai", () => {
   return {
     __esModule: true,
     // When the route does `new OpenAI()`, it gets this fake object.
-    // The only method we need to fake is `beta.chat.completions.parse`
+    // The only method we need to fake is `chat.completions.parse`
     // because that's the structured output method used in lib/openai.ts.
+    // (In SDK v6, .parse() moved from beta to the main namespace.)
     default: jest.fn().mockImplementation(() => ({
-      beta: {
-        chat: {
-          completions: {
-            parse: mockParse,
-          },
+      chat: {
+        completions: {
+          parse: mockParse,
         },
       },
     })),
@@ -53,7 +52,7 @@ describe("POST /api/parse-receipt", () => {
     // a new instance of the mocked OpenAI class
     const OpenAI = require("openai").default;
     const openaiInstance = new OpenAI();
-    mockParse = openaiInstance.beta.chat.completions.parse;
+    mockParse = openaiInstance.chat.completions.parse;
 
     // Most tests need an API key to be set. The few tests that
     // don't (like the "missing key" test) will delete it.
