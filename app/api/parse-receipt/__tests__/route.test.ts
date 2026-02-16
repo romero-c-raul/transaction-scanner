@@ -174,4 +174,45 @@ describe("POST /api/parse-receipt", () => {
     expect(data.error).not.toMatch(/sk-/);
     expect(data.error).not.toMatch(/invalid API key/);
   });
+
+  // --- Sub-step 4d: Rate limiting test ---
+  // The rate limiter (lib/rate-limit.ts) allows 10 requests per 60 seconds.
+  // We test it by sending 12 requests in a loop and checking that
+  // the first 10 succeed and the last 2 are rejected with 429.
+
+  it("returns 429 after too many requests", async () => {
+    // Arrange: mock returns success every time so the rate limiter
+    // is the only thing that can cause a non-200 response
+    mockParse.mockResolvedValue({
+      choices: [
+        {
+          message: {
+            parsed: {
+              store: null,
+              date: null,
+              items: [],
+              tax: 0,
+              total: 0,
+            },
+          },
+        },
+      ],
+    });
+
+    // Act: send 12 requests (2 more than the 10-request limit)
+    const responses = [];
+    for (let i = 0; i < 12; i++) {
+      const request = createRequest({ text: "receipt text" });
+      const response = await POST(request);
+      responses.push(response);
+    }
+
+    // Assert: some responses should be 429 (rate limited)
+    const statusCodes = responses.map((r) => r.status);
+    expect(statusCodes).toContain(429);
+
+    // The first 10 should succeed, the last 2 should be rejected
+    const successCount = statusCodes.filter((s) => s === 200).length;
+    expect(successCount).toBe(10);
+  });
 });
