@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ReceiptUploader } from "@/components/receipt-uploader";
 import { ReceiptPreview } from "@/components/receipt-preview";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Card, CardContent } from "@/components/ui/card";
 import { extractText, OcrResult } from "@/lib/ocr";
+import { useReceipt } from "@/lib/receipt-context";
+import { Receipt } from "@/types/receipt";
 
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -13,6 +17,12 @@ export default function Home() {
   const [ocrProgress, setOcrProgress] = useState<number>(0);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [ocrError, setOcrError] = useState<string | null>(null);
+  const [isParsing, setIsParsing] = useState<boolean>(false);
+  const [parseError, setParseError] = useState<string | null>(null);
+
+  // Get shared state from the ReceiptProvider (set up in layout.tsx).
+  // setReceipt/setReceiptImage write to Context so the verify page can read them.
+  const { receipt, setReceipt, setReceiptImage } = useReceipt();
 
   const handleProcess = async () => {
     setIsProcessing(true);
