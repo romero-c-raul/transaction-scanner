@@ -449,10 +449,10 @@ After implementation, verify with these tests:
 
 ## 11. Future Enhancements (Not in MVP)
 
-### PDF Support + Server-Side OCR Upgrade (High Priority)
-**Why deferred:** Adds complexity, but will be needed since receipts are often scanned as PDFs.
+### OCR Accuracy Upgrade + PDF Support (High Priority)
+**Why deferred:** Adds complexity, but will be needed since receipts are often scanned as PDFs or may be too crumpled/messy for browser-side OCR.
 
-**Two options when implementing PDF support:**
+**Three options when upgrading OCR:**
 
 **Option A: Keep Browser OCR (Simpler)**
 ```bash
@@ -475,6 +475,21 @@ npm install pdfjs-dist
 - If browser OCR is too slow
 - If you want batch processing capabilities
 - Natural time to evaluate: when adding PDF support
+
+**Option C: Skip OCR — Send Image Directly to GPT-4o-mini Vision (Simplest)**
+- GPT-4o-mini supports image/vision inputs — the LLM can "read" the receipt image directly
+- Remove Tesseract.js entirely; frontend sends the image to a modified `/api/parse-receipt` route
+- The API route sends the image to GPT-4o-mini, which extracts and structures the data in one step
+- Cost: ~$0.00026/receipt with `detail: "high"` (comparable to the current OCR + text approach at ~$0.0002/receipt)
+- Benefits: Simpler architecture (no OCR library), better accuracy on crumpled/messy receipts (LLM understands context, not just characters), smaller client-side bundle, one API call instead of two processing phases
+- Trade-offs: Receipt image is sent to OpenAI's servers (privacy consideration), requires internet (no offline OCR), slightly larger API request payload (image vs text)
+- Code changes: Modify `/api/parse-receipt` to accept base64 image, update `lib/openai.ts` to send image content in the messages array, remove or keep Tesseract.js as optional fallback
+
+**When to choose Option C:**
+- If Tesseract accuracy is insufficient and you want the simplest fix
+- If you want to reduce client-side complexity (remove Tesseract.js dependency)
+- If privacy of receipt images being sent to OpenAI is acceptable
+- Natural time to evaluate: after testing the MVP with real receipts
 
 ### Multi-Image Support
 **Why deferred:** Adds UI complexity (reordering, previewing multiple images).
