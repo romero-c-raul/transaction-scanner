@@ -106,15 +106,38 @@ export default function Home() {
           <p className="text-sm text-destructive">{ocrError}</p>
         )}
 
-        {ocrResult && (
-          <div className="w-full flex flex-col gap-2">
-            <p className="text-sm text-muted-foreground">
-              Confidence: {Math.round(ocrResult.confidence)}%
-            </p>
-            <pre className="w-full max-h-64 overflow-auto rounded-lg bg-muted p-4 text-sm">
-              {ocrResult.text}
-            </pre>
-          </div>
+        {parseError && (
+          <p className="text-sm text-destructive text-center">{parseError}</p>
+        )}
+
+        {/* Show while the AI is parsing the OCR text (between OCR finishing
+            and the API response arriving — typically 2-5 seconds) */}
+        {isParsing && (
+          <p className="text-sm text-muted-foreground text-center">
+            Parsing receipt with AI...
+          </p>
+        )}
+
+        {/* Show parsed receipt summary once the API responds successfully */}
+        {receipt && (
+          <Card className="w-full">
+            <CardContent className="pt-6">
+              <h3 className="font-semibold mb-2">Parsed Receipt</h3>
+              <p>Store: {receipt.store ?? "Unknown"}</p>
+              <p>Date: {receipt.date ?? "Unknown"}</p>
+              <p>Items: {receipt.items.length} found</p>
+              <p>Tax: ${receipt.tax.toFixed(2)}</p>
+              <p>Total: ${receipt.total.toFixed(2)}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Link uses client-side navigation — the page changes without a
+            full browser reload, so the Context state (receipt) is preserved */}
+        {receipt && (
+          <Link href="/verify" className="w-full">
+            <Button className="w-full">Continue to Verify</Button>
+          </Link>
         )}
       </div>
     </div>
