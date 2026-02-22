@@ -25,20 +25,56 @@ export default function Home() {
   const { receipt, setReceipt, setReceiptImage } = useReceipt();
 
   const handleProcess = async () => {
+    // Reset all state for a fresh run
     setIsProcessing(true);
     setOcrError(null);
+    setParseError(null);
     setOcrResult(null);
     setOcrProgress(0);
+    setReceipt(null);
 
+    // --- Phase 1: OCR (runs in the browser) ---
+    let ocrText: string;
     try {
       const result = await extractText(selectedFile!, (progress) => {
         setOcrProgress(progress);
       });
-      setOcrResult(result);
+      ocrText = result.text;
     } catch (err) {
-      setOcrError(err instanceof Error ? err.message : "OCR failed");
+      const errorMessage = err instanceof Error ? err.message : "OCR failed";
+      setOcrError(errorMessage);
+      setIsProcessing(false);
+      return; // Stop here if OCR fails — don't call the API
+    }
+
+    // --- Phase 2: AI Parsing (calls our server, which calls OpenAI) ---
+    setIsParsing(true);
+    try {
+      const response = await fetch("/api/parse-receipt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: ocrText }),
+      });
+
+      // fetch does NOT throw on HTTP errors (4xx, 5xx) — it only throws
+      // on network failures. We must check response.ok ourselves.
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to parse receipt");
+      }
+
+      const parsedReceipt: Receipt = await response.json();
+
+      // Store in shared Context so the verify page can access it
+      setReceipt(parsedReceipt);
+      setReceiptImage(selectedFile!);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to parse receipt";
+      setParseError(errorMessage);
     } finally {
       setIsProcessing(false);
+      setIsParsing(false);
     }
   };
 
